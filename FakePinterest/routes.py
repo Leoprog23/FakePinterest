@@ -14,7 +14,7 @@ def homepage(): # A função que vai exibir a página inicial
     formLogin = FormLogin()
     if formLogin.validate_on_submit():
         usuario = Usuario.query.filter_by(email=formLogin.email.data).first()
-        if usuario and bcrypt.check_password_hash(usuario.senha, formLogin.senha.data):
+        if usuario and bcrypt.check_password_hash(usuario.senha.encode("utf-8"), formLogin.senha.data):
             login_user(usuario)
             return redirect(url_for("perfil", id_usuario=usuario.id))
     return render_template("homepage.html", form=formLogin) # Utilizando o código HTML criado na pasta template
@@ -24,7 +24,7 @@ def homepage(): # A função que vai exibir a página inicial
 def criarconta():
     formCriarConta = FormCriarConta()
     if formCriarConta.validate_on_submit():
-        senha = bcrypt.generate_password_hash(formCriarConta.senha.data)
+        senha = bcrypt.generate_password_hash(formCriarConta.senha.data).decode("utf-8")
         usuario = Usuario(username=formCriarConta.username.data, senha=senha, email=formCriarConta.email.data)
         database.session.add(usuario)
         database.session.commit()
